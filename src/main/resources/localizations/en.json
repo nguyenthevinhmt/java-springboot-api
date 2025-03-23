@@ -1,0 +1,5 @@
+{
+  "OK": "Sucess",
+  "BAD_REQUEST": "Bas Request",
+  "ProductNotFound" : "Product Not Found"
+}
