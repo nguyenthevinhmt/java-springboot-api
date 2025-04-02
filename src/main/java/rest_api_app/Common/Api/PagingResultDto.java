@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PagingResultDto<T> {
-    private T items;
-    private int totalItems;
+    private List<T> items;
+    private long totalItems;
 }

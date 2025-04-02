@@ -3,39 +3,40 @@ package rest_api_app.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import rest_api_app.Dtos.ProductPagingRequestDto;
+import rest_api_app.Dtos.ProductDto;
 import rest_api_app.Models.Product;
 import rest_api_app.Repository.ProductRepository;
+import rest_api_app.Repository.Specification.ProductSpecification;
+
+import java.util.Map;
 
 @Service
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Page<Product> findAll(ProductPagingRequestDto request) {
-        Pageable pageable = PageRequest.of(
-                request.getPageIndex(),
-                request.getPageSize(),
-                Sort.by("id").descending()
-        );
+    public Page<ProductDto> PagingAndFilter(Map<String, String> params){
+        int pageIndex = params.get("page_index") != null ? Integer.parseInt(params.get("page_index")) : 1;
+        int pageSize = params.get("page_size") != null ? Integer.parseInt(params.get("page_size")) : 25;
+        PageRequest pageable = PageRequest.of(pageIndex,pageSize);
 
-        // Tạo Specification cho các điều kiện tìm kiếm
-        Specification<Product> spec = Specification.where(null);
+        params.remove("page_index");
+        params.remove("page_size");
 
-        if (StringUtils.hasText(request.getKeyWord())) {
-            spec = spec.and((root, query, cb) -> {
-                String keyword = "%" + request.getKeyWord().toLowerCase() + "%";
-                return cb.or(
-                        cb.like(cb.lower(root.get("name")), keyword)
-                );
-            });
-        }
+        String name = params.get("name");
+        Specification<Product> specification = ProductSpecification.getSpecification(name);
 
-        return productRepository.findAll(pageable);
+        final Page<Product> products = this.productRepository.findAll(specification,pageable);
+        return products.map(p -> new ProductDto(p));
     }
 }
+
+
+
+
+
+
+
+
