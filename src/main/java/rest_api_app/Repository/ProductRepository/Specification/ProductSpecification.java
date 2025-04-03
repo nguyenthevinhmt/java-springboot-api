@@ -1,7 +1,7 @@
-package rest_api_app.Repository.Specification;
+package rest_api_app.Repository.ProductRepository.Specification;
 
 import org.springframework.data.jpa.domain.Specification;
-import rest_api_app.Models.Product;
+import rest_api_app.Models.Product.Product;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;

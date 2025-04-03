@@ -1,5 +1,7 @@
 {
   "OK": "Sucess",
   "BAD_REQUEST": "Bas Request",
-  "ProductNotFound": "Không tìm thấy heheeh"
+  "ProductNotFound": "Không tìm thấy heheeh",
+  "UsernameAlreadyExist": "Tên đăng nhập đã được sử dụng",
+  "UserNotFound": "Tài khoản không tồn tại"
 }

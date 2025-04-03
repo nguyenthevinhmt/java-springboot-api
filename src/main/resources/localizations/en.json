@@ -1,5 +1,7 @@
 {
   "OK": "Sucess",
   "BAD_REQUEST": "Bas Request",
-  "ProductNotFound" : "Product Not Found"
+  "ProductNotFound" : "Product Not Found",
+  "UsernameAlreadyExist": "User name allready exist",
+  "UserNotFound": "User not found"
 }

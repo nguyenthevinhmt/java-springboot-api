@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rest_api_app.Models.Product;
+import rest_api_app.Models.Product.Product;
 
 @Getter
 @Setter

@@ -20,6 +20,11 @@ public final class ErrorCode {
     //Custom error code
     public static final int ProductNotFound = 1000;
 
+    //
+    public static final int UsernameAlreadyExist = 2000;
+    public static final int UserNotFound = 2001;
+    public static final int PasswordIncorrect = 2002;
+
     // Mapping tên biến -> giá trị
     private static final Map<String, Integer> nameToCodeMap = new HashMap<>();
     // Mapping giá trị -> tên biến
