@@ -1,18 +1,19 @@
 package rest_api_app.Models.User;
 
-import Shared.Constant.CommonStatus;
-import Shared.Constant.UserType;
-import Shared.EntityBase.EntityBase;
+import lombok.*;
+import rest_api_app.Shared.Constant.CommonStatus;
+import rest_api_app.Shared.Constant.UserType;
+import rest_api_app.Shared.EntityBase.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -21,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "USER")
-public class User extends EntityBase {
+public class User extends EntityBase implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -70,5 +71,34 @@ public class User extends EntityBase {
         this.phone = phone;
         this.status = CommonStatus.Active;
         this.userType = UserType.ADMIN;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

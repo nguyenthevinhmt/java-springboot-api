@@ -2,10 +2,10 @@ package rest_api_app.Controllers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import rest_api_app.Common.Api.ApiResponse;
-import rest_api_app.Common.Api.PagingResultDto;
-import rest_api_app.Common.Exception.ErrorCode;
-import rest_api_app.Common.Exception.UserFriendlyException;
+import rest_api_app.Shared.Common.Api.ApiResponse;
+import rest_api_app.Shared.Common.Api.PagingResultDto;
+import rest_api_app.Shared.Common.Exception.ErrorCode;
+import rest_api_app.Shared.Common.Exception.UserFriendlyException;
 import rest_api_app.Dtos.CreateProductDto;
 import rest_api_app.Dtos.ProductDto;
 import rest_api_app.Models.Product.Product;

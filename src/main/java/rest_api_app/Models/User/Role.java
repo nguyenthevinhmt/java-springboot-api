@@ -1,6 +1,6 @@
 package rest_api_app.Models.User;
 
-import Shared.EntityBase.EntityBase;
+import rest_api_app.Shared.EntityBase.EntityBase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -14,8 +14,11 @@ import java.util.Map;
 
 @Service
 public class ProductService {
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     public Page<ProductDto> PagingAndFilter(Map<String, String> params){
         int pageIndex = params.get("page_index") != null ? Integer.parseInt(params.get("page_index")) - 1 : 0;
