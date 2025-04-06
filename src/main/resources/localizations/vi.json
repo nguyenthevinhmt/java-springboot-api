@@ -1,5 +1,11 @@
 {
   "OK": "Sucess",
   "BAD_REQUEST": "Bas Request",
-  "ProductNotFound": "Không tìm thấy heheeh"
+  "ProductNotFound": "Không tìm thấy heheeh",
+  "UserNotFound": "Người dùng không tồn tại",
+  "PasswordIsIncorrect": "Mật khẩu không chính xác",
+  "UserAlreadyExist": "Người dùng đã tồn tại trong hệ thống",
+  "ListTokenIsEmpty": "Không tìm thấy danh sách token",
+  "TokenIsNull": "Bạn chưa đăng nhập hệ thống",
+  "RefreshTokenIsExpired": "Hết phiên đăng nhập. Vui lòng đăng nhập lại!"
 }

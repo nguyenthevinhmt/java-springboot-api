@@ -1,5 +1,11 @@
 {
   "OK": "Sucess",
   "BAD_REQUEST": "Bas Request",
-  "ProductNotFound" : "Product Not Found"
+  "ProductNotFound" : "Product Not Found",
+  "UserNotFound": "User not found",
+  "PasswordIsIncorrect": "Password invalid",
+  "UserAlreadyExist": "User already exist",
+  "ListTokenIsEmpty": "List token is empty",
+  "TokenIsNull": "You are not logged into the system",
+  "RefreshTokenIsExpired": "Session expired. Please log in again!"
 }

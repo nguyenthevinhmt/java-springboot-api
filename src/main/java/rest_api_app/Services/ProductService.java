@@ -6,9 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import rest_api_app.Dtos.ProductDto;
-import rest_api_app.Models.Product;
-import rest_api_app.Repository.ProductRepository;
-import rest_api_app.Repository.Specification.ProductSpecification;
+import rest_api_app.Entity.Product.Product;
+import rest_api_app.Repository.Product.ProductRepository;
+import rest_api_app.Repository.Product.Specification.ProductSpecification;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package rest_api_app.Models;
+package rest_api_app.Entity.Product;
 
 import jakarta.persistence.*;
 import lombok.Getter;
