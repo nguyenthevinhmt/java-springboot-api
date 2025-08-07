@@ -1,6 +1,9 @@
 package rest_api_app.Controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -9,13 +12,15 @@ import rest_api_app.Common.Api.ApiResponse;
 import rest_api_app.Common.Exception.ErrorCode;
 import rest_api_app.Common.Exception.UserFriendlyException;
 import rest_api_app.Config.JwtUtils;
+import rest_api_app.Entity.User.TokenManager;
 import rest_api_app.Repository.User.TokenManagerRepository;
+import rest_api_app.Services.User.Abstracts.ITokenManagerService;
 import rest_api_app.Services.User.Dtos.AuthDto.AuthRequestDto;
 import rest_api_app.Services.User.Dtos.AuthDto.AuthResponseDto;
 import rest_api_app.Entity.User.AppUser;
 import rest_api_app.Repository.User.UserRepository;
-import rest_api_app.Services.User.Implements.TokenManagerService;
 import rest_api_app.Shared.Constant.TokenTypeConst;
+import rest_api_app.Shared.CustomAnnotations.Authorize;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -23,9 +28,10 @@ public class AuthController {
     @Autowired private JwtUtils jwtUtil;
     @Autowired private UserRepository userRepo;
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private TokenManagerService tokenManagerService;
+    @Autowired private ITokenManagerService tokenManagerService;
     @Autowired private TokenManagerRepository tokenManagerRepository;
 
+    @Operation(summary = "Đăng nhập hệ thống")
     @PostMapping("/login")
     public ApiResponse login(@RequestBody AuthRequestDto request) {
         AppUser appUser = userRepo.findFirstByUsername(request.getUsername()).orElseThrow(() -> new UserFriendlyException(ErrorCode.UserNotFound));
@@ -55,22 +61,23 @@ public class AuthController {
         if (attributes == null) return null;
 
         String authHeader = attributes.getRequest().getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            var token = authHeader.substring(7);
-            var tokenId = jwtUtil.getTokenId(token);
-            tokenManagerService.revokeToken(tokenId);
-            return new ApiResponse();
-        }
-        else {
+        if ((authHeader == null) && !authHeader.startsWith("Bearer ")) {
             throw new UserFriendlyException(ErrorCode.TokenIsNull);
         }
+        var token = authHeader.substring(7);
+        var tokenId = jwtUtil.getTokenId(token);
+        tokenManagerService.revokeToken(tokenId);
+        return new ApiResponse();
     }
 
+    @Authorize()
     @PostMapping("refresh-token")
     public ApiResponse refreshToken(String refreshToken) {
         var tokenId = jwtUtil.getTokenId(refreshToken);
         var userId = jwtUtil.getUserId(refreshToken);
         var username = jwtUtil.getUsername(refreshToken);
+        var refreshTokenExpirationDate = jwtUtil.getExpirationDate(refreshToken);
+
         long now = System.currentTimeMillis();
         var refreshTokenInfo = tokenManagerRepository.findByTokenIdAndTokenType(tokenId, TokenTypeConst.REFRESH_TOKEN)
                 .orElseThrow(() -> new UserFriendlyException(ErrorCode.ListTokenIsEmpty));
@@ -80,8 +87,17 @@ public class AuthController {
         var appUser = new AppUser();
         appUser.setId(userId);
         appUser.setUsername(username);
-        var tokenResponse = jwtUtil.generateToken(appUser);
+        var tokenResponse = jwtUtil.generateToken(appUser, refreshTokenExpirationDate);
         var result = new AuthResponseDto(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(), tokenResponse.getExpiredDate());
+
+        //revoke token if not expired or revoked
+        var listOldToken = tokenManagerRepository.findByTokenId(tokenId);
+        if(!listOldToken.isEmpty()) {
+            for(TokenManager token : listOldToken){
+                if(!token.isRevoked()) token.setRevoked(true);
+            }
+            tokenManagerRepository.saveAll(listOldToken);
+        }
         return new ApiResponse(result);
     }
 }

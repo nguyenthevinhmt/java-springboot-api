@@ -28,19 +28,39 @@ public class JwtUtils {
         long now = System.currentTimeMillis();
 
         // 1. Access Token
-        String accessTokenId = UUID.randomUUID().toString();
+        String tokenId = UUID.randomUUID().toString();
         long accessTokenExpiration = now + 1000 * 60 * 60; // 1 giờ
 
-        String accessToken = generateJwtToken(userDetails, accessTokenId, accessTokenExpiration);
-        TokenDto accessTokenInfo = buildTokenDto(accessTokenId, userDetails, TokenTypeConst.ACCESS_TOKEN, now, accessTokenExpiration);
+        String accessToken = generateJwtToken(userDetails, tokenId, accessTokenExpiration);
+        TokenDto accessTokenInfo = buildTokenDto(tokenId, userDetails, TokenTypeConst.ACCESS_TOKEN, now, accessTokenExpiration);
         tokenManagerService.saveToken(accessTokenInfo);
 
         // 2. Refresh Token
-        String refreshTokenId = UUID.randomUUID().toString();
         long refreshTokenExpiration = now + 1000L * 60 * 60 * 72; // 72 giờ
 
-        String refreshToken = generateJwtToken(userDetails, refreshTokenId, refreshTokenExpiration);
-        TokenDto refreshTokenInfo = buildTokenDto(refreshTokenId, userDetails, TokenTypeConst.REFRESH_TOKEN, now, refreshTokenExpiration);
+        String refreshToken = generateJwtToken(userDetails, tokenId, refreshTokenExpiration);
+        TokenDto refreshTokenInfo = buildTokenDto(tokenId, userDetails, TokenTypeConst.REFRESH_TOKEN, now, refreshTokenExpiration);
+        tokenManagerService.saveToken(refreshTokenInfo);
+
+        return new AuthResponseDto(accessToken, refreshToken, accessTokenExpiration);
+    }
+
+    public AuthResponseDto generateToken(AppUser userDetails, Long refreshTokenExpiredTime) {
+        long now = System.currentTimeMillis();
+
+        // 1. Access Token
+        String tokenId = UUID.randomUUID().toString();
+        long accessTokenExpiration = now + 1000 * 60 * 60; // 1 giờ
+
+        String accessToken = generateJwtToken(userDetails, tokenId, accessTokenExpiration);
+        TokenDto accessTokenInfo = buildTokenDto(tokenId, userDetails, TokenTypeConst.ACCESS_TOKEN, now, accessTokenExpiration);
+        tokenManagerService.saveToken(accessTokenInfo);
+
+        // 2. Refresh Token
+        long refreshTokenExpiration = refreshTokenExpiredTime;
+
+        String refreshToken = generateJwtToken(userDetails, tokenId, refreshTokenExpiration);
+        TokenDto refreshTokenInfo = buildTokenDto(tokenId, userDetails, TokenTypeConst.REFRESH_TOKEN, now, refreshTokenExpiration);
         tokenManagerService.saveToken(refreshTokenInfo);
 
         return new AuthResponseDto(accessToken, refreshToken, accessTokenExpiration);
@@ -48,6 +68,7 @@ public class JwtUtils {
 
     private String generateJwtToken(AppUser userDetails, String tokenId, Long expirationTime) {
         Claims claims = Jwts.claims();
+        claims.put("username", userDetails.getUsername());
         claims.put("user_id", userDetails.getId());
         claims.put("token_id", tokenId);
 
@@ -70,32 +91,34 @@ public class JwtUtils {
         return dto;
     }
 
-    public String getUsername(String token) {
+    private Claims getClaim(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-
-    public String getTokenId(String token) {
-        var claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getUsername(String token) {
+        var claims = getClaim(token);
+
+        return claims.get("username", String.class);
+    }
+
+    public String getTokenId(String token) {
+        var claims = getClaim(token);
 
         return claims.get("token_id", String.class);
     }
 
     public Long getUserId(String token) {
-        var claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        var claims = getClaim(token);
         return claims.get("user_id", Long.class);
+    }
+
+    public Long getExpirationDate(String token) {
+        var claims  = getClaim(token);
+        return claims.getExpiration().getTime();
     }
 
     public boolean validateToken(String token, AppUser userDetails) {

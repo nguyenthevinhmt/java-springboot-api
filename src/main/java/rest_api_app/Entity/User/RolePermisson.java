@@ -14,6 +14,8 @@ public class RolePermisson {
     private Long id;
     @Column(name = "KEY_PERMISSION", nullable = false, length = 50)
     private String keyPermission;
+    @Column(name = "ROLE_ID", nullable = false)
+    private Long roleId;
     @Column(name = "PARENT_ID")
     private String parentId;
 }

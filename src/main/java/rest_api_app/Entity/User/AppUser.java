@@ -1,14 +1,14 @@
 package rest_api_app.Entity.User;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "APP_USER")
 public class AppUser {
     @Id
@@ -22,11 +22,4 @@ public class AppUser {
     private String phone;
     @Column(name = "ADDRESS", nullable = true, length = 150)
     private String address;
-
-    public AppUser(String username, String password, String phone, String address) {
-        this.username = username;
-        this.password = password;
-        this.phone = phone;
-        this.address = address;
-    }
 }

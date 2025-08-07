@@ -18,6 +18,10 @@ public class UserService implements IUserService {
         AppUser user = userRepository.findFirstByUsername(username)
                 .orElseThrow(() -> new UserFriendlyException(ErrorCode.UserNotFound));
 
-        return new AppUser(user.getUsername(), user.getPassword(), user.getPhone(), user.getAddress());
+        return AppUser.builder()
+                .username(user.getUsername())
+                .address(user.getAddress())
+                .phone(user.getPhone())
+                .build();
     }
 }
