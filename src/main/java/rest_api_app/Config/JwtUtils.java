@@ -70,6 +70,7 @@ public class JwtUtils {
         Claims claims = Jwts.claims();
         claims.put("username", userDetails.getUsername());
         claims.put("user_id", userDetails.getId());
+        claims.put("user_name", userDetails.getUsername());
         claims.put("token_id", tokenId);
 
         return Jwts.builder()
@@ -91,8 +92,17 @@ public class JwtUtils {
         return dto;
     }
 
-    private Claims getClaim(String token) {
-        return Jwts.parserBuilder()
+    public String getUsername(String token) {
+        var claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("user_name", String.class);
+    }
+
+    public String getTokenId(String token) {
+        var claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
